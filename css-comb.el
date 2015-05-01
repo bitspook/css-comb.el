@@ -26,14 +26,6 @@
    "Could not apply csscomb. See %s to check errors for details"
    bufname))
 
-(defun css-comb-format-region (program beg end)
-  "By PROGRAM, format each line in the BEG .. END region."
-  (if (executable-find program)
-      (save-excursion
-        (apply 'call-process-region beg end program t
-               (list t nil) t css-comb-args))
-    (message (css-comb-command-not-found-message program))))
-
 (defun css-comb-format-buffer (program extenstion)
   "By PROGRAM, format current buffer with EXTENSTION."
   (if (executable-find program)
@@ -72,6 +64,19 @@ By PROGRAM, format current buffer with EXTENSTION."
       (progn
         (delete-file tmpfile)))))
 
+(defun css-comb-format-region (program extension beg end)
+  "By PROGRAM, format each line in the BEG .. END region."
+  (let* ((regionbufname "*css-comb-region*")
+         (regionbuf (get-buffer-create regionbufname)))
+    (copy-to-buffer regionbuf beg end)
+    (with-current-buffer regionbuf
+      (css-comb-format-buffer program extension))
+    (delete-region beg end)
+    (insert-buffer-substring regionbuf)
+    (indent-region beg end)
+    (kill-buffer regionbuf)))
+
+
 ;;;###autoload
 (defun css-comb ()
   "Comb region if active, otherwise the current buffer.
@@ -81,9 +86,9 @@ Formatting is done according to the csscomb command."
   (if (use-region-p)
       (css-comb-format-region
        css-comb-executable
+       "css"
        (region-beginning) (region-end))
     (css-comb-format-buffer css-comb-executable "css")))
-
 
 (provide 'css-comb)
 
