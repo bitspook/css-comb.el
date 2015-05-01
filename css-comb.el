@@ -90,6 +90,24 @@ Formatting is done according to the csscomb command."
        (region-beginning) (region-end))
     (css-comb-format-buffer css-comb-executable "css")))
 
+;;;###autoload
+(defun css-beauty-comb ()
+  "Comb region if active, otherwise the current buffer and beautify it.
+Beautification is done using web-beautify-css"
+  (interactive)
+  (when (require 'web-beautify nil 'noerror)
+    (if (use-region-p)
+        (progn (css-comb-format-region
+                css-comb-executable
+                "css"
+                (region-beginning) (region-end))
+               (web-beautify-format-region
+                web-beautify-css-program
+                (region-beginning) (region-end)))
+      (progn
+        (css-comb-format-buffer css-comb-executable "css")
+        (web-beautify-format-buffer web-beautify-css-program "css")))))
+
 (provide 'css-comb)
 
 ;; Local Variables:
