@@ -9,7 +9,7 @@
 
 ;;; Code:
 
-(defvar css-comb-executable "echo"
+(defvar css-comb-executable "csscomb"
   "Executable to use for combing the CSS")
 
 (defconst css-comb-args '())
@@ -50,7 +50,9 @@ By PROGRAM, format current buffer with EXTENSTION."
           (if (zerop (apply 'call-process program nil nil nil args))
               (progn
                 (with-current-buffer outputbuf
-                  (insert-file-contents tmpfile))
+                  (insert-file-contents tmpfile)
+                  (when (require 'web-beautify nil 'noerror)
+                    (web-beautify-format-buffer web-beautify-css-program "css")))
                 (let ((p (point)))
                   (save-excursion
                     (with-current-buffer (current-buffer)
@@ -89,24 +91,6 @@ Formatting is done according to the csscomb command."
        "css"
        (region-beginning) (region-end))
     (css-comb-format-buffer css-comb-executable "css")))
-
-;;;###autoload
-(defun css-beauty-comb ()
-  "Comb region if active, otherwise the current buffer and beautify it.
-Beautification is done using web-beautify-css"
-  (interactive)
-  (when (require 'web-beautify nil 'noerror)
-    (if (use-region-p)
-        (progn (css-comb-format-region
-                css-comb-executable
-                "css"
-                (region-beginning) (region-end))
-               (web-beautify-format-region
-                web-beautify-css-program
-                (region-beginning) (region-end)))
-      (progn
-        (css-comb-format-buffer css-comb-executable "css")
-        (web-beautify-format-buffer web-beautify-css-program "css")))))
 
 (provide 'css-comb)
 
