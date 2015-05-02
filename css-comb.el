@@ -1,5 +1,4 @@
-;;; Commentary
-;;; css-comb.el --- Sort CSS properties in a particular order using Css Comb (https://github.com/csscomb/csscomb.js)
+;;; css-comb.el --- Sort CSS properties in a particular order using CSS Comb
 
 ;; Copyright (C) 2015 Charanjit Singh <ckhabra@gmail.com>
 
@@ -7,10 +6,15 @@
 ;; Version: 0.1
 ;; URL: https://github.com/channikhabra/css-comb-el
 
+;;; Commentary:
+
+;; Wraps csscomb (https://github.com/csscomb/csscomb.js) for
+;; convenient use in Emacs.  Provides an interactive command `css-comb'.
+
 ;;; Code:
 
 (defvar css-comb-executable "csscomb"
-  "Executable to use for combing the CSS")
+  "Executable to use for combing the CSS.")
 
 (defconst css-comb-args '())
 
@@ -26,20 +30,20 @@
    "Could not apply csscomb. See %s to check errors for details"
    bufname))
 
-(defun css-comb-format-buffer (program extenstion)
-  "By PROGRAM, format current buffer with EXTENSTION."
+(defun css-comb-format-buffer (program extension)
+  "Using PROGRAM, format current buffer with EXTENSION."
   (if (executable-find program)
-      (css-comb-format-buffer-1 program extenstion)
-    (message (css-comb-command-not-found-message program))))
+      (css-comb-format-buffer-1 program extension)
+    (error (css-comb-command-not-found-message program))))
 
 
-(defun css-comb-format-buffer-1 (program extenstion)
+(defun css-comb-format-buffer-1 (program extension)
   "Internal function of `css-comb-format-buffer'.
 
-By PROGRAM, format current buffer with EXTENSTION."
+Using PROGRAM, format current buffer with EXTENSION."
   (let* ((tmpfile (make-temp-file "css-comb" nil
-                                  (format ".%s" extenstion)))
-         (outputbufname (format "*css-comb-%s*" extenstion))
+                                  (format ".%s" extension)))
+         (outputbufname (format "*css-comb-%s*" extension))
          (outputbuf (get-buffer-create outputbufname))
          (args (append css-comb-args (list tmpfile))))
     (unwind-protect
@@ -61,13 +65,13 @@ By PROGRAM, format current buffer with EXTENSTION."
                   (goto-char p)
                   (message "Applied css-comb")
                   (kill-buffer outputbuf)))
-            (message (css-comb-format-error-message outputbufname))
+            (error (css-comb-format-error-message outputbufname))
             (display-buffer outputbuf)))
       (progn
         (delete-file tmpfile)))))
 
 (defun css-comb-format-region (program extension beg end)
-  "By PROGRAM, format each line in the BEG .. END region."
+  "Using PROGRAM, format each line in the BEG .. END region."
   (let* ((regionbufname "*css-comb-region*")
          (regionbuf (get-buffer-create regionbufname)))
     (copy-to-buffer regionbuf beg end)
@@ -80,21 +84,22 @@ By PROGRAM, format current buffer with EXTENSTION."
 
 
 ;;;###autoload
-(defun css-comb ()
-  "Comb region if active, otherwise the current buffer.
+(defun css-comb (&optional beg end)
+  "Comb region from BEG to END if active, otherwise the entire buffer.
 
 Formatting is done according to the csscomb command."
-  (interactive)
+  (interactive "r")
   (if (use-region-p)
       (css-comb-format-region
        css-comb-executable
        "css"
-       (region-beginning) (region-end))
+       beg end)
     (css-comb-format-buffer css-comb-executable "css")))
 
 (provide 'css-comb)
 
 ;; Local Variables:
 ;; coding: utf-8
-;; eval: (checkdoc-minor-mode 1)
+;; End:
+
 ;;; css-comb.el ends here
