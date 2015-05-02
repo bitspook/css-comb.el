@@ -4,12 +4,13 @@
 
 ;; Author: Charanjit Singh <ckhabra@gmail.com>
 ;; Version: 0.1
-;; URL: https://github.com/channikhabra/css-comb-el
+;; URL: https://github.com/channikhabra/css-comb.el
 
 ;;; Commentary:
 
 ;; Wraps csscomb (https://github.com/csscomb/csscomb.js) for
 ;; convenient use in Emacs.  Provides an interactive command `css-comb'.
+;; Beautifies combed css if web-beautify package is installed (recommended)
 
 ;;; Code:
 
