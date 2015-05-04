@@ -8,7 +8,13 @@ You'll need to first install `csscomb` using npm
 [sudo] npm install -g csscomb
 #+END_SRC
 *** Install this package
-Until I add this package to melpa, you can manually install it.
+**** From MELPA
+Make sure you have `melpa` added to your package sources
+#+begin_src emacs-lisp :tangle yes
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+#+end_src
+Then you can do `M-x package-list-packages` and search for `css-comb`, or you can simply install it with `package-install css-comb`
+**** Manually
 - Clone this package somewhere on your computer
 - Add the cloned dir to your load-path
 - `require(css-comb)` in your init.el
