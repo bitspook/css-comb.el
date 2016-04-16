@@ -3,7 +3,7 @@
 ;; Copyright (C) 2015 Charanjit Singh <ckhabra@gmail.com>
 
 ;; Author: Charanjit Singh <ckhabra@gmail.com>
-;; Version: 0.1
+;; Version: 0.2
 ;; URL: https://github.com/channikhabra/css-comb.el
 
 ;;; Commentary:
@@ -57,7 +57,7 @@ Using PROGRAM, format current buffer with EXTENSION."
                 (with-current-buffer outputbuf
                   (insert-file-contents tmpfile)
                   (when (require 'web-beautify nil 'noerror)
-                    (web-beautify-format-buffer web-beautify-css-program "css")))
+                    (web-beautify-css-buffer)))
                 (let ((p (point)))
                   (save-excursion
                     (with-current-buffer (current-buffer)
